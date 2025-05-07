@@ -1,0 +1,271 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              12/06/2024 01:39:31 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main
+                    -.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <regx52.h> // AT89C52
+   2          #include "../lib/delay.h"
+   3          int time;
+   4          #define SH P2_0
+   5          #define DS P2_1
+   6          #define ST P2_2
+   7          #define CL1 P2_3
+   8          #define CL2 P2_4
+   9          #define SH1 P3_0
+  10          #define DS1 P3_1
+  11          #define ST1 P3_2
+  12          #define CL11 P3_5
+  13          #define CL22 P3_4
+  14          #define x1 P1_0
+  15          #define v1 P1_1
+  16          #define d1 P1_2
+  17          #define x2 P1_3
+  18          #define v2 P1_4
+  19          #define d2 P1_5
+  20          #define btn1 P3_3
+  21          #define btn2 P2_6
+  22          unsigned char codeled7[10] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F};
+  23          void IC74595(unsigned char b) {
+  24   1          unsigned char j;
+  25   1          for (j = 0; j < 8; j++) {
+  26   2              DS = (b & (0x80 >> j)) ? 1 : 0; 
+  27   2              SH = 0;
+  28   2              SH = 1;
+  29   2          }
+  30   1          ST=0;
+  31   1          ST=1;
+  32   1      }
+  33          void IC745951(unsigned char b) {
+  34   1          unsigned char j;
+  35   1          for (j = 0; j < 8; j++) {
+  36   2              DS1 = (b & (0x80 >> j)) ? 1 : 0; 
+  37   2              SH1 = 0;
+  38   2              SH1 = 1;
+  39   2          }
+  40   1          ST1=0;
+  41   1          ST1=1;
+  42   1      }
+  43          int timetruc1, timetruc2;
+  44          int tx1=20,tx2=20;
+  45          int tv1=5, tv2=5;
+  46          void x1sang()
+  47          {
+  48   1        x1=1;
+  49   1        v1=0;
+  50   1        d1=0;
+  51   1      }
+  52          void v1sang()
+  53          {
+  54   1        v1=1;
+C51 COMPILER V9.60.7.0   MAIN                                                              12/06/2024 01:39:31 PAGE 2   
+
+  55   1        x1=0;
+  56   1        d1=0;
+  57   1      }
+  58          void d1sang()
+  59          {
+  60   1        d1=1;
+  61   1        x1=0;
+  62   1        v1=0;
+  63   1      }
+  64          void x2sang()
+  65          {
+  66   1        x2=1;
+  67   1        d2=0;
+  68   1        v2=0;
+  69   1      }
+  70          void v2sang()
+  71          {
+  72   1        v2=1;
+  73   1        x2=0;
+  74   1        d2=0;
+  75   1      }
+  76          void d2sang()
+  77          {
+  78   1        d2=1;
+  79   1        x2=0;
+  80   1        v2=0;
+  81   1      }
+  82          void controlDEN()
+  83          {
+  84   1        if(time<=tx1)
+  85   1        {
+  86   2          x1sang();
+  87   2          d2sang();
+  88   2        }
+  89   1        if(time>=tx1&&time<tx1+tv1)
+  90   1        {
+  91   2          v1sang();
+  92   2          d2sang();
+  93   2        }
+  94   1        if(time>=tx1+tv1&&time<tx1+tv1+tx2)
+  95   1        {
+  96   2          d1sang();
+  97   2          x2sang();
+  98   2          
+  99   2        }
+ 100   1        if(time>=tx1+tv1+tx2&&time<tx1+tx2+tv1+tv2)
+ 101   1        {
+ 102   2          d1sang();
+ 103   2          v2sang();
+ 104   2        }
+ 105   1      }
+ 106            void controltruc()
+ 107            {
+ 108   1          if(time==0)
+ 109   1          {
+ 110   2            timetruc1=tx1;
+ 111   2            timetruc2=tx1+tv1;
+ 112   2          }
+ 113   1          if(time==tx1)
+ 114   1          {
+ 115   2            timetruc1=tv1;
+ 116   2            timetruc2=tv1;
+C51 COMPILER V9.60.7.0   MAIN                                                              12/06/2024 01:39:31 PAGE 3   
+
+ 117   2          }
+ 118   1          if(time==tx1+tv1)
+ 119   1          {
+ 120   2            timetruc1=tx2+tv2;
+ 121   2            timetruc2=tx2;
+ 122   2          }
+ 123   1          if(time==tx1+tv1+tx2)
+ 124   1          {
+ 125   2            timetruc1=tv2;
+ 126   2            timetruc2=tv2;
+ 127   2          }
+ 128   1          if(time==tx1+tx2+tv1+tv2)
+ 129   1          {
+ 130   2            time=0;
+ 131   2          }
+ 132   1        }
+ 133            void hienthiled1(int time1, int time2)
+ 134            {
+ 135   1          CL11=0;
+ 136   1          IC745951(codeled7[time1]);
+ 137   1          delay(8);
+ 138   1          CL11=1;
+ 139   1          IC745951(codeled7[time2]);
+ 140   1          CL22=0;
+ 141   1          delay(8);
+ 142   1          CL22=1;
+ 143   1        }
+ 144            void hienthiled2(int time1, int time2)
+ 145            {
+ 146   1          CL1=0;
+ 147   1          IC74595(codeled7[time1]);
+ 148   1          delay(8);
+ 149   1          CL1=1;
+ 150   1          IC74595(codeled7[time2]);
+ 151   1          CL2=0;
+ 152   1          delay(8);
+ 153   1          CL2=1;
+ 154   1        }
+ 155            void controlLED() {
+ 156   1          int i;
+ 157   1          for (i = 0; i < 28; i++) {
+ 158   2              hienthiled1(timetruc1 / 10, timetruc1 % 10);
+ 159   2              hienthiled2(timetruc2 / 10, timetruc2 % 10);
+ 160   2          }
+ 161   1      }
+ 162            void modeauto()
+ 163            {
+ 164   1          
+ 165   1          controlDen();
+*** WARNING C206 IN LINE 165 OF main.c: 'controlDen': missing function-prototype
+ 166   1          controltruc();
+ 167   1          controlLED();
+ 168   1          
+ 169   1        if (time==0) {
+ 170   2          controltruc();
+ 171   2          }
+ 172   1          time++;
+ 173   1          timetruc1--;
+ 174   1          timetruc2--;
+ 175   1        }
+ 176            int Mode;
+ 177            int check=0;
+C51 COMPILER V9.60.7.0   MAIN                                                              12/06/2024 01:39:31 PAGE 4   
+
+ 178            int docnut()
+ 179            {
+ 180   1          
+ 181   1          if(btn2==0&&check==0)
+ 182   1          {
+ 183   2            Mode=1;
+ 184   2            check=1;
+ 185   2            delay(50);
+ 186   2            return 2;
+ 187   2          }
+ 188   1          return 0;
+ 189   1        } 
+ 190            void modeoff()
+ 191            {
+ 192   1          CL1=1;
+ 193   1          CL11=1;
+ 194   1          CL22=1;
+ 195   1          CL2=1;
+ 196   1          d1=0;
+ 197   1          x1=0;
+ 198   1          v1=0;
+ 199   1          x2=0;
+ 200   1          v2=0;
+ 201   1          d2=0;
+ 202   1        }
+ 203          void main() {
+ 204   1        EA=1; //cho phep ngat ngoai toan cuc
+ 205   1         EX1=1;
+ 206   1       PX1=1; //uu tien ngat INT1
+ 207   1       IT1=1; // NGAT NGOAI 1 CÃNH XUONG
+ 208   1        while(1)
+ 209   1        {
+ 210   2          if(docnut()==2)
+ 211   2          {
+ 212   3            time=0;
+ 213   3          }
+ 214   2          switch(Mode)
+ 215   2          {
+ 216   3            case 0:
+ 217   3            {
+ 218   4              modeoff();
+ 219   4              break;
+ 220   4            }
+ 221   3            case 1:
+ 222   3            {
+ 223   4              
+ 224   4              modeauto();
+ 225   4              break;
+ 226   4            }
+ 227   3            default:
+ 228   3            {
+ 229   4              modeoff();
+ 230   4            }
+ 231   3          }
+ 232   2        }   
+ 233   1       }
+ 234          void ngatngoai() interrupt 2
+ 235          {
+ 236   1         Mode=0;
+ 237   1      check=0;
+ 238   1      }
+
+C51 COMPILER V9.60.7.0   MAIN                                                              12/06/2024 01:39:31 PAGE 5   
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    834    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     28       6
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
